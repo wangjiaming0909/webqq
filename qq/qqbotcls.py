@@ -70,8 +70,6 @@ class QQBot(object):
         self.termForver = QTermServer(self.conf.termServerPort).Run
         self.findSender = contactdb.FindSender
     
-    scheduler = BackgroundScheduler(daemon=True)
-    schedTable = defaultdict(list)
     
     @classmethod
     def initScheduler(cls, bot):
@@ -142,11 +140,16 @@ class QQBot(object):
     @classmethod
     def AddSched(cls, **triggerArgs):
         pass
+    
     @classmethod
     def AddSlot(cls, func):
         cls.slotsTable[func.__name__].append(func)
         return func
     
+    scheduler = BackgroundScheduler(daemon=True)
+    schedTable = defaultdict(list)#创建一个dict，所有的values默认都为空的list
+
+
 def wrap(slots):
     return lambda *a, **kw: [f(*a, **kw) for f in slots[:]]
 

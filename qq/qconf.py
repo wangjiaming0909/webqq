@@ -15,7 +15,7 @@ class QConf(object):
         self.qq = None if qq is None else str(qq)
         self.user = None if user is None else str(user)
         self.version = version
-        self.bench = 'E:\pyqq'
+        self.bench = 'D:\pyqq'
         self.readCmdLine()
         self.readConfFile()
         

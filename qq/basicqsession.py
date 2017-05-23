@@ -106,7 +106,7 @@ class BasicQSession(object):
             repeatOnDeny = 0
         )
             
-        print 'ligin success %s(%s)' %(self.nick,self.qq)
+        print 'login success %s(%s)' %(self.nick,self.qq)
     
     def Copy(self):
         c = self.__class__()

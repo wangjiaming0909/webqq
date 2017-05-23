@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from qq.qqbotcls import QQBot, QQBotSlot as qqbotslot
+#QQBotSlot = QQBot.AddSlot是一个函数
 
 @qqbotslot
 def onQQMessage(bot, contact, member, content):
