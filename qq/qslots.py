@@ -1,5 +1,19 @@
 # -*- coding: utf-8 -*-
-from qq.qqbotcls import QQBot 
+from qq.qqbotcls import QQBot, QQBotSlot as qqbotslot
+
+@qqbotslot
+def onQQMessage(bot, contact, member, content):
+    if content == '--version':
+        bot.SendTo(contact, 'QQbot-'+bot.conf.version)
+
+@qqbotslot
+def onInterval(bot):
+    pass
+
+@qqbotslot
+def onStartupComplete(bot):
+    print 'STARTUP-COMPLETE'
+    pass
 
 def onTermCommand(bot, client, command):
     if command.startswith('GET /'):

@@ -83,7 +83,8 @@ class QQBot(object):
         print '---------function -- QQBot.Run run'
         QQBot.initScheduler(self)
         
-        import qqbot.qslots as _x; _x
+        import qq.qslots as _x; _x
+        
         self.onStartupComplete()
         
         StartDaemonThread(self.pollForever)
@@ -92,7 +93,7 @@ class QQBot(object):
         
         MainLoop()
     
-    def intervalForver(self):
+    def intervalForever(self):
         while True:
             time.sleep(300)
             Put(self.onInterval)
@@ -118,7 +119,12 @@ class QQBot(object):
         
         contact,member, nameInGroup = \
             self.findSender(ctype, fromUin, membUin, self.conf.qq)
+        if ctype == 'buddy':
+            print 'Message from %s: |%s|' %(contact, content)
+        else:
+            print 'Message from %s[%s]:|%s|' %(contact, member, content)
         
+        self.onQQMessage(contact, member, content)
         
         
     
@@ -138,7 +144,8 @@ class QQBot(object):
         pass
     @classmethod
     def AddSlot(cls, func):
-        pass
+        cls.slotsTable[func.__name__].append(func)
+        return func
     
 def wrap(slots):
     return lambda *a, **kw: [f(*a, **kw) for f in slots[:]]

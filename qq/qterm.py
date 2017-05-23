@@ -26,7 +26,7 @@ class QTermServer(object):
     def Run(self, onCommand=None):
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.testSetSockOpt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            #self.sock.testSetSockOpt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.sock.bind((HOST, self.port))
             self.sock.listen(5)
         except socket.error as e:
