@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import qqbot
+import qq
 
 if __name__ == '__main__':
-    qqbot.qqbotcls.RunBot()
+    qq.qqbotcls.RunBot()
     
