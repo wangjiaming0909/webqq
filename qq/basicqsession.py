@@ -59,13 +59,13 @@ class BasicQSession(object):
                     Put(sys.exit, 0)
                     sys.exit(1)
                 self.session.verify = False
-                requests.packages.urllib3.disable_warnings(
-                    requests.packages.urllib3.exceptions.
-                    InsecureRequestWarning
-                )
+#                 requests.packages.urllib3.disable_warnings(
+#                     requests.packages.urllib3.exceptions.
+#                     InsecureRequestWarning
+#                 )
                 return self.urlGet(url, data, Referer, Origin)
-        else:
-            raise
+            else:
+                raise
             
     def getUinAndPsessionid(self):
         result = self.smartRequest(

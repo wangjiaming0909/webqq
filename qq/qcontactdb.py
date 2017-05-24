@@ -2,6 +2,8 @@
 from qq.display import DBDisplayer
 from qq.contactdb import ContactDB
 from qq.fetch import Fetch
+import collections
+import time
 
 class QContactDB(DBDisplayer):
     
@@ -44,6 +46,16 @@ class QContactDB(DBDisplayer):
             else:
                 print '已经获取并更新 %s ' % rname
                 return True
+    
+    def FirstFetch(self):
+        q = collections.deque(['buddy', 'group', 'discuss'])
+        while q:
+            tinfo = q.popleft()
+            if self.Update(tinfo) and tinfo in ('group', 'discuss'):
+                cl = self.List(tinfo)
+                if cl:
+                    q.extend(cl)
+            time.sleep(1.0)
     
     def FindSender(self, ctype, fromUin, membUin, thisQQ):
         contact = self.find(ctype, fromUin)

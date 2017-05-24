@@ -1,6 +1,67 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 
+class QContact(object):
+    def __init__(self, *fields):
+        for k, field in zip(self.fields, fields):
+            self.__dict__[k] = field
+        self.__dict__['ctype'] = self.__class__.ctype
+
+    def __repr__(self):
+        return '%s“%s”' % (self.chs_type, self.name)
+
+    def __setattr__(self, k, v):
+        raise TypeError("QContact object is readonly")
+
+class Buddy(QContact):
+    columns = '''\
+        qq VARCHAR(12),
+        uin VARCHAR(12) PRIMARY KEY,
+        nick VARCHAR(80),
+        mark VARCHAR(80),
+        name VARCHAR(80)
+    '''
+
+class Group(QContact):
+    columns = '''\
+        qq VARCHAR(12),
+        uin VARCHAR(12) PRIMARY KEY,
+        nick VARCHAR(80),
+        mark VARCHAR(80),
+        name VARCHAR(80),
+        gcode VARCHAR(12)
+    '''
+
+class Discuss(QContact):
+    columns = '''\
+        uin VARCHAR(12) PRIMARY KEY,
+        name VARCHAR(80)
+    '''
+
+class GroupMember(QContact):
+    columns = '''\
+        qq VARCHAR(12),
+        uin VARCHAR(12) PRIMARY KEY,
+        nick VARCHAR(80),
+        mark VARCHAR(80),
+        card  VARCHAR(80),
+        name VARCHAR(80),
+        join_time INTEGER,
+        last_speak_time INTEGER,
+        role VARCHAR(12),
+        role_id INTEGER,
+        is_buddy INTEGER,
+        level INTEGER,
+        levelname VARCHAR(36),
+        point INTEGER
+    '''
+
+class DiscussMember(QContact):
+    columns = '''\
+        uin VARCHAR(12) PRIMARY KEY,
+        name VARCHAR(80)
+    '''
+
 CTYPES = {
     'buddy': 'friend',
     'group': 'group',
@@ -12,9 +73,6 @@ CTYPES = {
 
 TAGS = ('qq=', 'name=', 'nick=', 'mark=', 'card=', 'uin=')
 
-class QContact(object):
-    def __init__(self, *fields):
-        pass
     
 class ContactDB(object):
     def __init__(self, dbname=':memory'):
@@ -77,6 +135,15 @@ class ContactDB(object):
     def selectAll(self, tname):
         self.cursor.execute("SELECT * FROM '%s'" % tname)
         return self.cursor.fetchall() 
+
+contactMaker = {}
+
+for cls in [Buddy, Group, Discuss, GroupMember, DiscussMember]:
+    cls.ctype = cls.__name__.lower().replace('member', '-member')
+    cls.chs_type = CTYPES[cls.ctype]
+    cls.field = [row.strip().split(None, 1)[0]
+                  for row in cls.columns.strip().split('\n')]
+    contactMaker[cls.ctype] = cls
        
 def tName(tinfo):
     if tinfo in ('buddy', 'group', 'discuss'):
@@ -85,7 +152,7 @@ def tName(tinfo):
         return tinfo.ctype + '_member_' + tinfo.uin
     
 def tMaker(tinfo):
-    pass
+    return contactMaker[tType(tinfo)]
 
 def rname(tinfo):
     if tinfo in ('buddy', 'group', 'discuss'):

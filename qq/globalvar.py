@@ -52,7 +52,7 @@ sampleConfStr = '''{
         "restartOnOffline" : False,
         
         # 完成全部联系人列表获取之后才启动 QQBot 
-        "startAfterFetch" : False,
+        "startAfterFetch" : True,
         
         # 插件目录
         "pluginPath" : ".",

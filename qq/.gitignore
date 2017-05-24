@@ -1,3 +1,4 @@
+/qcontactdb.pyc
 /__init__.pyc
 /basicqsession.pyc
 /common.pyc
@@ -6,11 +7,10 @@
 /fetch.pyc
 /globalvar.pyc
 /mainloop.pyc
+/mysum.pyc
 /qconf.pyc
-/qcontactdb.pyc
 /qqbotcls.pyc
 /qrcodemanager.pyc
 /qsession.pyc
-/qterm.pyc
-/mysum.pyc
 /qslots.pyc
+/qterm.pyc

@@ -69,7 +69,7 @@ class QQBot(object):
         self.poll = session.Copy().Poll
         self.termForver = QTermServer(self.conf.termServerPort).Run
         self.findSender = contactdb.FindSender
-    
+        self.firstFetch = contactdb.FirstFetch
     
     @classmethod
     def initScheduler(cls, bot):
@@ -83,11 +83,14 @@ class QQBot(object):
         
         import qq.qslots as _x; _x
         
+        if self.conf.startAfterFetch:
+            self.firstFetch()
+        
         self.onStartupComplete()
         
         StartDaemonThread(self.pollForever)
-        StartDaemonThread(self.termForver, self.onTermCommand)
-        StartDaemonThread(self.intervalForever)
+        #StartDaemonThread(self.termForver, self.onTermCommand)
+        #StartDaemonThread(self.intervalForever)
         
         MainLoop()
     
@@ -114,7 +117,7 @@ class QQBot(object):
         if ctype == 'timeout':
             return 
         
-        contact,member, nameInGroup = \
+        contact, member, nameInGroup = \
             self.findSender(ctype, fromUin, membUin, self.conf.qq)
         if ctype == 'buddy':
             print 'Message from %s: |%s|' %(contact, content)
