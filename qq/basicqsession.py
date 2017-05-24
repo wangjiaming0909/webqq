@@ -3,7 +3,7 @@ import requests
 import random
 from qq.qrcodemanager import QrcodeManager
 import pickle, sys, time
-from qq.common import JsonLoads, JsonDumps
+from qq.common import JsonLoads, JsonDumps, Partition
 from requests.packages.urllib3.exceptions import RequestError
 from qq.qconf import QConf
 from qq.mainloop import Put
@@ -281,7 +281,7 @@ class BasicQSession(object):
         else:
             result = result[0]
             ctype = {
-                'message': 'buffy',
+                'message': 'buddy',
                 'group_message': 'group', 
                 'discu_message': 'discuss'
             }[result['poll_type']]
@@ -291,12 +291,80 @@ class BasicQSession(object):
             content = None              #暂时不要表情
             return ctype, fromUin, memberUin, content   
     
+    def send(self, ctype, uin, content, epCodes=[0]):
+        self.msgId += 1
+        sendUrl = {
+            'buddy': 'http://d1.web2.qq.com/channel/send_buddy_msg2',
+            'group': 'http://d1.web2.qq.com/channel/send_qun_msg2',
+            'discuss': 'http://d1.web2.qq.com/channel/send_discu_msg2'
+        }
+        sendTag = {'buddy':'to', 'group':'group_uin', 'discuss':'did'}
+        self.smartRequest(
+            url = sendUrl[ctype], 
+            data = {
+                'r':JsonDumps({
+                    sendTag[ctype]: int(uin),
+                    'content':JsonDumps(
+                        [['font', {'name': '宋体', 'size':10, 
+                                   'stype': [0,0,0], 'color': '000000'}]]
+                    ),
+                    'face': 522,
+                    'clientid':self.clientid,
+                    'msg_id': self.msgId,
+                    'psessionid': self.psessionid
+                })
+            }, 
+            Referer = ('http://d1.web2.qq.com/proxy.html?v=20151105001&'
+                       'callback=1&id=2'), 
+            expectedCodes = epCodes
+        )
+        
+    def SendTo(self, contact, content, resendOn1202=True):
+        result = None
+        
+        if not hasattr(contact, 'ctype'):
+            result = '错误， 消息接受者必须为一个 QContact 对象'    
+        
+        if contact.ctype.endswith('-member'):
+            result = '错误， 不能给群成员或讨论组成员发送消息'
+        else:
+            if isinstance(content, str):
+                content = content
+            elif isinstance(content, unicode):
+                content = content.encode('utf8')
+            else:
+                result = '错误， 消息内容必须为str或unicode对象'
+        
+        if not content:
+            result = '错误， 消息内容不能为空'
+        
+        if result:
+            print result
+            return result
+        
+        epCodes = resendOn1202 and [0] or [0, 1202]
+        result = '向 %s 发送消息成功' %contact
+        
+        while content:
+            front, content = Partition(content)
+            try:
+                self.send(contact.ctype, contact.uin, front, epCodes)
+            except Exception as e:
+                result = '错误：send message to %s error %s' %(str(contact), e)
+                print result
+                break
+            else:
+                print '%s: %s' %(result, front)
+        return result
+        
 def bknHash(skey, init_str=5381):
     hash_str = init_str
     for i in skey:
         hash_str += (hash_str << 5) + ord(i)
     hash_str = int(hash_str & 2147483647)
     return hash_str
+
+
 
 def qHash(x, K):
     N = [0] * 4

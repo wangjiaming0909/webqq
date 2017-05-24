@@ -21,7 +21,14 @@ class ContactDB(object):
         self.conn = sqlite3.connect(dbname)
         self.conn.text_factory = str
         self.cursor = self.conn.cursor()
-        
+    
+    def exist(self, tname):
+        self.cursor.execute(
+            ("SELECT tb1_name FROM sqlite_master "
+             "WHERE type='table' AND tb1_name='%s'") % tname
+        )
+        return bool(self.cursor.fetchall())
+    
     def List(self, tinfo, cinfo=None):
         tname, tmaker = tName(tinfo), tMaker(tinfo)
         

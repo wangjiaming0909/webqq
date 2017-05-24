@@ -14,8 +14,12 @@ class QContactDB(DBDisplayer):
     def List(self, tinfo, cinfo=None):#tinfo: ctype
         result = self.db.List(tinfo, cinfo)
         if result is None:
-            pass
-            
+            if not self.Update(tinfo):
+                return None
+            else:
+                return self.db.List(tinfo, cinfo)
+        else:
+            return result
     
     def find(self, tinfo, uin):#tinfo: ctype--dict
         cl = self.List(tinfo, 'uin='+uin)
@@ -24,8 +28,10 @@ class QContactDB(DBDisplayer):
         elif not cl:
             self.Update(tinfo)
             cl = self.List(tinfo, 'uin='+uin)
+            if not cl:
+                return None
         else:
-            pass
+            return cl[0]
     
     def Update(self, tinfo):
         contacts = Fetch(self.session, tinfo)

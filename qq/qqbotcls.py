@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys, re
+import sys
 import subprocess
 import time
 from qq.qsession import QLogin
@@ -8,7 +8,7 @@ from _collections import defaultdict
 from qq.common import StartDaemonThread
 from qq.qterm import QTermServer
 from pip._vendor.requests.packages.urllib3.exceptions import RequestError
-from qq.mainloop import Put, mainloop, MainLoop
+from qq.mainloop import Put, MainLoop
 
 
 RESTART = 201
@@ -43,7 +43,7 @@ def runBot(botCls, qq, user):
         
         while True:
             p = subprocess.Popen(args)
-            pid = p.pid
+            #pid = p.pid
             code = p.wait()
             if code == 0:
                 print '正常停止'
@@ -108,8 +108,7 @@ class QQBot(object):
                 print 'qsession.Poll方法出错'
                 sys.exit(1)
             else:
-                pass
-                #Put(self.onPollComplete, 
+                Put(self.onPollComplete, *result)
     
     def onPollComplete(self, ctype, fromUin, membUin, content):
         if ctype == 'timeout':
