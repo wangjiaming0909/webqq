@@ -103,7 +103,7 @@ rootConf = {
     "cmdQrcode" : False,
     "debug" : False,
     "restartOnOffline" : False,
-    "startAfterFetch" : False,
+    "startAfterFetch" : True,
     "pluginPath" : "",
     "plugins" : [],
     "pluginsConf" : {},

@@ -116,15 +116,15 @@ class QQBot(object):
     def onPollComplete(self, ctype, fromUin, membUin, content):
         if ctype == 'timeout':
             return 
-        
-        contact, member, nameInGroup = \
+        #, member, nameInGroup
+        contact = \
             self.findSender(ctype, fromUin, membUin, self.conf.qq)
         if ctype == 'buddy':
             print 'Message from %s: |%s|' %(contact, content)
         else:
-            print 'Message from %s[%s]:|%s|' %(contact, member, content)
-        
-        self.onQQMessage(contact, member, content)
+            #print 'Message from %s[%s]:|%s|' %(contact, member, content)
+            pass
+        #self.onQQMessage(contact, member, content)
         
         
     

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sqlite3
+import traceback
 
 class QContact(object):
     def __init__(self, *fields):
@@ -82,8 +83,8 @@ class ContactDB(object):
     
     def exist(self, tname):
         self.cursor.execute(
-            ("SELECT tb1_name FROM sqlite_master "
-             "WHERE type='table' AND tb1_name='%s'") % tname
+            ("SELECT tbl_name FROM sqlite_master "
+             "WHERE type='table' AND tbl_name='%s'") % tname
         )
         return bool(self.cursor.fetchall())
     
@@ -131,17 +132,49 @@ class ContactDB(object):
             items = self.select(tname, column, cinfo, like)
             
         return [tmaker(*item) for item in items]
+    
+    def select(self, tname, column, value, like=False):
+        if not like:
+            sql = "select * from '%s' where %s=?" %(tname, column)
+        else:
+            value = '%s' + value + '%s'
+            sql = "SELECT * FROM '%s' WHERE %s like ?" % (tname, column)
+            
+        self.cursor.execute(sql, (value,))
+        return self.cursor.fetchall()
         
     def selectAll(self, tname):
         self.cursor.execute("SELECT * FROM '%s'" % tname)
         return self.cursor.fetchall() 
-
+    
+    def Update(self, tinfo, contacts):
+        tname, tmaker = tName(tinfo), tMaker(tinfo)
+        
+        try:
+            if self.exist(tname):
+                self.cursor.execute("DELETE FROM '%s'" % tname)
+            else:
+                sql = ("CREATE TABLE '%s'(" %tname) +tmaker.columns+')'
+                self.cursor.execute(sql)
+            
+            if contacts:
+                w = ','.join(['?'] * len(tmaker.fields))
+                sql = "INSERT INTO '%s' VALUES(%s)" %(tname, w)
+                self.cursor.executemany(sql, contacts)
+        except:
+            self.conn.rollback()
+            traceback.print_exc()
+            return None
+        else:
+            self.conn.commit()
+            return rName(tinfo)
+        
 contactMaker = {}
 
 for cls in [Buddy, Group, Discuss, GroupMember, DiscussMember]:
     cls.ctype = cls.__name__.lower().replace('member', '-member')
     cls.chs_type = CTYPES[cls.ctype]
-    cls.field = [row.strip().split(None, 1)[0]
+    cls.fields = [row.strip().split(None, 1)[0]
                   for row in cls.columns.strip().split('\n')]
     contactMaker[cls.ctype] = cls
        
@@ -154,7 +187,7 @@ def tName(tinfo):
 def tMaker(tinfo):
     return contactMaker[tType(tinfo)]
 
-def rname(tinfo):
+def rName(tinfo):
     if tinfo in ('buddy', 'group', 'discuss'):
         return CTYPES[tinfo] + '列表'
     else:

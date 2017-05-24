@@ -1,13 +1,13 @@
 
 # -*- coding: utf-8 -*-
-from qq.contactdb import rname, tType
+from qq.contactdb import rName, tType
 from qq.common import JsonDumps, HTMLUnescape
 import collections
 import sys
 
 
 def Fetch(self, tinfo):
-    rname, ttype = rname(tinfo), tType(tinfo)
+    rname, ttype = rName(tinfo), tType(tinfo)
     print 'Fetching%s' %rname
     
     try:

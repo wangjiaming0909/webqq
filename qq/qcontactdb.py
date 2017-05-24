@@ -48,7 +48,7 @@ class QContactDB(DBDisplayer):
                 return True
     
     def FirstFetch(self):
-        q = collections.deque(['buddy', 'group', 'discuss'])
+        q = collections.deque(['buddy'])#, 'group', 'discuss'
         while q:
             tinfo = q.popleft()
             if self.Update(tinfo) and tinfo in ('group', 'discuss'):
@@ -59,3 +59,5 @@ class QContactDB(DBDisplayer):
     
     def FindSender(self, ctype, fromUin, membUin, thisQQ):
         contact = self.find(ctype, fromUin)
+        
+        return contact
